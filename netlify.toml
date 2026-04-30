@@ -1,0 +1,10 @@
+# Netlify Configuration — Himanshu Paliwal Insurance Website
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
