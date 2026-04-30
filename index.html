@@ -1436,18 +1436,16 @@ footer{background:#060e1c;padding:48px 24px 24px;text-align:center}
       </div>
       <!-- Chat -->
       <div id="gChat" style="padding:24px 24px 8px;min-height:280px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;"></div>
-      <!-- Options -->
-      <div id="gOpA" style="display:none;padding:10px 24px 22px;">
+      <!-- Options + Input always together -->
+      <div id="gOpA" style="display:none;padding:10px 24px 14px;">
         <div style="font-size:11px;font-weight:600;color:#6b6960;text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px;">Apna jawab chunein</div>
-        <div id="gOpG" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;"></div>
-      </div>
-      <!-- Free input -->
-      <div id="gInA" style="display:none;padding:0 24px 22px;display:none;">
-        <div style="display:flex;gap:8px;">
-          <textarea id="gInp" placeholder="Koi bhi sawaal puchho..." style="flex:1;border:1.5px solid #e2e1dc;border-radius:12px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:13px;resize:none;height:48px;outline:none;background:#f8f7f4;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();gSend();}"></textarea>
-          <button onclick="gSend()" id="gSB" style="width:48px;height:48px;background:#0a1628;color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:18px;flex-shrink:0;">➤</button>
+        <div id="gOpG" style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;"></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="gInp" placeholder="Ya seedha apna sawaal likhein..." style="flex:1;border:1.5px solid #e2e1dc;border-radius:12px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;background:#f8f7f4;" onkeydown="if(event.key==='Enter'){gSend();}"/>
+          <button onclick="gSend()" id="gSB" style="width:42px;height:42px;background:#0a1628;color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:16px;flex-shrink:0;">➤</button>
         </div>
       </div>
+      <div id="gInA" style="display:none;"></div>
       <!-- Result -->
       <div id="gRW" style="display:none;padding:0 24px 28px;"></div>
       <div style="padding:14px 24px;background:#f1f0ed;border-top:1px solid #e2e1dc;font-size:10px;color:#6b6960;text-align:center;line-height:1.6;">ⓘ Recommendations IRDAI FY2024-25 data par based hain. Final purchase se pehle Himanshu Paliwal (+91 9257877312) se consultation zaroor lein.</div>
@@ -2374,9 +2372,20 @@ function gAddBot(h){const c=document.getElementById('gChat');if(!c)return;const 
 function gAddUser(t){const c=document.getElementById('gChat');if(!c)return;const e=document.createElement('div');e.style.cssText='display:flex;flex-direction:row-reverse;gap:10px;align-items:flex-start;animation:mi .35s ease';e.innerHTML='<div style="width:32px;height:32px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">Aap</div><div style="background:#0a1628;color:#fff;border-radius:16px 4px 16px 16px;padding:13px 16px;font-size:14px;max-width:90%;">'+t+'</div>';c.appendChild(e);gScroll();}
 function gShowTyping(){const c=document.getElementById('gChat');if(!c)return;const e=document.createElement('div');e.id='gTyp';e.style.cssText='display:flex;gap:10px;align-items:flex-start;';e.innerHTML='<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#c9a84c,#e8c460);display:flex;align-items:center;justify-content:center;font-size:14px;">🤖</div><div style="background:#f1f0ed;border-radius:4px 16px 16px 16px;padding:13px 16px;display:flex;gap:5px;align-items:center;"><div style="width:7px;height:7px;background:#9a9890;border-radius:50%;animation:td 1.2s infinite;"></div><div style="width:7px;height:7px;background:#9a9890;border-radius:50%;animation:td 1.2s .2s infinite;"></div><div style="width:7px;height:7px;background:#9a9890;border-radius:50%;animation:td 1.2s .4s infinite;"></div></div>';c.appendChild(e);gScroll();}
 function gHideTyping(){const e=document.getElementById('gTyp');if(e)e.remove();}
-function gShowOpts(items){const g=document.getElementById('gOpG');if(!g)return;g.style.gridTemplateColumns=items.length<=3?'1fr':'1fr 1fr';g.innerHTML=items.map((o,i)=>`<button onclick="gPick(${i})" data-v="${o.v}" data-t="${o.t}" style="background:#fff;border:1.5px solid #e2e1dc;border-radius:12px;padding:11px 14px;text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#1a1917;display:flex;align-items:center;gap:9px;line-height:1.3;transition:all .18s;" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e1dc'"><span style="font-size:17px;">${o.i}</span><span>${o.t}</span></button>`).join('');document.getElementById('gOpA').style.display='block';const ia=document.getElementById('gInA');if(ia)ia.style.display='none';}
-function gHideAll(){const oa=document.getElementById('gOpA'),ia=document.getElementById('gInA');if(oa)oa.style.display='none';if(ia)ia.style.display='none';}
-function gShowInp(){const oa=document.getElementById('gOpA'),ia=document.getElementById('gInA');if(oa)oa.style.display='none';if(ia){ia.style.display='flex';setTimeout(()=>{const inp=document.getElementById('gInp');if(inp)inp.focus();},100);}}
+function gShowOpts(items){
+  const g=document.getElementById('gOpG');if(!g)return;
+  g.style.gridTemplateColumns=items.length<=3?'1fr':'1fr 1fr';
+  g.innerHTML=items.map((o,i)=>`<button onclick="gPick(${i})" data-v="${o.v}" data-t="${o.t}" style="background:#fff;border:1.5px solid #e2e1dc;border-radius:12px;padding:11px 14px;text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#1a1917;display:flex;align-items:center;gap:9px;line-height:1.3;transition:all .18s;" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e1dc'"><span style="font-size:17px;">${o.i}</span><span>${o.t}</span></button>`).join('');
+  document.getElementById('gOpA').style.display='block';
+  const inp=document.getElementById('gInp');if(inp){inp.value='';inp.placeholder='Ya seedha apna sawaal likhein...';}
+}
+function gHideAll(){const oa=document.getElementById('gOpA');if(oa)oa.style.display='none';}
+function gShowInp(){
+  const oa=document.getElementById('gOpA');
+  if(oa){oa.style.display='block';}
+  document.getElementById('gOpG').innerHTML='<div style="font-size:12px;color:#6b6960;padding:4px 0;">Koi bhi sawaal puchho 👇</div>';
+  const inp=document.getElementById('gInp');if(inp){inp.placeholder='Apna sawaal likhein...';inp.focus();}
+}
 
 async function gPick(i){
   const btns=document.querySelectorAll('#gOpG button');
@@ -2433,6 +2442,8 @@ function gShowResult(){
       <button onclick="gReset()" style="background:#fff;color:#0a1628;border:1.5px solid #e2e1dc;border-radius:12px;padding:13px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🔄 Naya Sawaal</button>
     </div>`;
   rw.style.display='block';gHideAll();
+  // Show free text box after result
+  const oa=document.getElementById('gOpA');if(oa){oa.style.display='block';document.getElementById('gOpG').innerHTML='<div style="font-size:12px;color:#6b6960;padding:4px 2px;">Aur koi sawaal? Seedha puchho 👇</div>';}const inp=document.getElementById('gInp');if(inp){inp.value='';inp.placeholder='Jaise: Zero dep kya hai? Ya mujhe aur options chahiye...';}  
   setTimeout(()=>{rw.scrollIntoView({behavior:'smooth',block:'start'});},100);
 }
 function gReset(){
@@ -2462,4 +2473,4 @@ function initAll(){
 document.addEventListener('DOMContentLoaded',initAll);
 </script>
 </body>
-</html>
+                                                                              </html>
