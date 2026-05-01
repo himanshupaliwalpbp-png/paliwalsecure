@@ -1,5 +1,4 @@
 exports.handler = async function(event, context) {
-  // CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -7,7 +6,6 @@ exports.handler = async function(event, context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 200, headers, body: '' };
   }
@@ -19,8 +17,7 @@ exports.handler = async function(event, context) {
   try {
     const { system, messages } = JSON.parse(event.body);
 
-    // Get API key from Netlify environment variable
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
       return {
         statusCode: 500,
@@ -29,24 +26,25 @@ exports.handler = async function(event, context) {
       };
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 1024,
-        system: system,
-        messages: messages
+        messages: [
+          { role: 'system', content: system },
+          ...messages
+        ]
       })
     });
 
     if (!response.ok) {
       const err = await response.text();
-      console.error('Anthropic error:', err);
+      console.error('Groq error:', err);
       return {
         statusCode: response.status,
         headers,
@@ -55,10 +53,18 @@ exports.handler = async function(event, context) {
     }
 
     const data = await response.json();
+
+    // Convert Groq response format to Anthropic-like format
+    // so index.html ka existing code kaam kare bina kisi change ke
+    const reply = data.choices?.[0]?.message?.content || '';
+    const anthropicFormat = {
+      content: [{ type: 'text', text: reply }]
+    };
+
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(data)
+      body: JSON.stringify(anthropicFormat)
     };
 
   } catch (err) {
@@ -70,3 +76,4 @@ exports.handler = async function(event, context) {
     };
   }
 };
+
